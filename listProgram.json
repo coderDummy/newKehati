@@ -5,7 +5,7 @@
     "location": "Bukit Batu, Bengkalis",
     "year": "2021–2025",
     "slug": "mangrove-pangkalan-jambi.html",
-    "image": "/image/program/mangrove2.png",
+    "image": "image/program/mangrove2.png",
     "category": "Mangrove"
   },
   {
@@ -23,7 +23,7 @@
     "location": "Bengkalis, Riau",
     "year": "2022–2025",
     "slug": "poligowo.html",
-    "image": "/image/program/poligowo.png",
+    "image": "image/program/poligowo.png",
     "category": "Gambut"
   },
   {
@@ -41,7 +41,7 @@
     "location": "Sukajadi, Bengkalis",
     "year": "2022–2025",
     "slug": "sukajadi.html",
-    "image": "/image/program/bird.png",
+    "image": "image/program/bird.png",
     "category": "Gambut"
   },
   {
@@ -50,7 +50,7 @@
     "location": "Tanjung Leban, Bengkalis",
     "year": "2023–2025",
     "slug": "lebah-tanjung-leban.html",
-    "image": "/image/program/eduwisata2.png",
+    "image": "image/program/eduwisata2.png",
     "category": "Eduwisata"
   }
 ]
