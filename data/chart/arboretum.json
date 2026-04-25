@@ -1,0 +1,146 @@
+{
+  "CHARTS": [
+    {
+      "canvasId": "chartFlora",
+      "type": "line",
+      "csv": "data/arboretum/data-flora.csv",
+      "title": "Tren Jumlah Total Individu Flora",
+      "color": "#0A3A82",
+      "fill": true,
+      "yMin": null,
+      "tooltipSuffix": " individu"
+    },
+    {
+      "canvasId": "chartKehatiFlora",
+      "type": "bar",
+      "labels": [
+        "2019",
+        "2020",
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "values": [
+        2.55,
+        2.69,
+        2.72,
+        3.1,
+        3.18,
+        3.19,
+        3.29
+      ],
+      "title": "Indeks Kehati (H') Flora Arboretum Gambut",
+      "subtitle": "Indeks Shannon-Wiener keanekaragaman vegetasi gambut",
+      "color": "#0A3A82",
+      "yMin": 2.0,
+      "yAxisLabel": "Indeks Kehati",
+      "showValueLabels": true
+    },
+    {
+      "canvasId": "chartEkologiBurung",
+      "type": "bar",
+      "labels": [
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "values": [
+        2.89,
+        2.8,
+        3.18,
+        2.93,
+        3.07
+      ],
+      "title": "Indeks Kehati (H') Burung Arboretum Gambut",
+      "subtitle": "Indeks Shannon-Wiener keanekaragaman avifauna",
+      "color": "#0A3A82",
+      "yMin": 2.0,
+      "yAxisLabel": "Indeks Kehati",
+      "showValueLabels": true
+    },
+    {
+      "canvasId": "chartEkologiMamalia",
+      "type": "bar",
+      "labels": [
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "values": [
+        0.69,
+        1.59,
+        1.42,
+        1.92,
+        2.01
+      ],
+      "title": "Indeks Kehati (H') Mamalia Arboretum Gambut",
+      "subtitle": "Indeks Shannon-Wiener keanekaragaman mamalia",
+      "color": "#0A3A82",
+      "yMin": 0,
+      "yAxisLabel": "Indeks Kehati",
+      "showValueLabels": true
+    },
+    {
+      "canvasId": "chartEkologiHerpetofauna",
+      "type": "bar",
+      "labels": [
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "values": [
+        0.37,
+        1.33,
+        1.49,
+        2.18
+      ],
+      "title": "Indeks Kehati (H') Herpetofauna Arboretum Gambut",
+      "subtitle": "Indeks Shannon-Wiener keanekaragaman reptil & amfibi",
+      "color": "#0A3A82",
+      "yMin": 0,
+      "yAxisLabel": "Indeks Kehati",
+      "showValueLabels": true
+    }
+  ],
+  "TABLES": [
+    {
+      "containerId": "table-flora",
+      "csv": "data/arboretum/data-flora.csv",
+      "label": "Flora \u2014 Vegetasi Gambut",
+      "sublabel": "Komposisi vegetasi khas gambut berdasarkan pemantauan",
+      "color": "#0A3A82",
+      "icon": "<svg viewBox='0 0 24 24' fill='none' stroke='var(--gold)' stroke-width='2'><path d='M12 22V12M12 12C12 7 8 4 3 5c0 5 3 8 9 7M12 12c0-5 4-8 9-7-1 5-4 8-9 7'/></svg>"
+    },
+    {
+      "containerId": "table-burung",
+      "csv": "data/arboretum/data-burung.csv",
+      "label": "Avifauna (Burung)",
+      "sublabel": "Spesies burung yang tercatat selama pemantauan",
+      "color": "#0A3A82",
+      "icon": "<svg viewBox='0 0 24 24' fill='none' stroke='var(--gold)' stroke-width='2'><path d='M22 2l-7 20-4-9-9-4 20-7z'/></svg>"
+    },
+    {
+      "containerId": "table-mamalia",
+      "csv": "data/arboretum/data-mamalia.csv",
+      "label": "Mamalia",
+      "sublabel": "Spesies mamalia yang tercatat selama pemantauan",
+      "color": "#0A3A82",
+      "icon": "<svg viewBox='0 0 24 24' fill='none' stroke='var(--gold)' stroke-width='2'><circle cx='12' cy='8' r='4'/><path d='M4 20c0-4 3.6-7 8-7s8 3 8 7'/></svg>"
+    },
+    {
+      "containerId": "table-herpetofauna",
+      "csv": "data/arboretum/data-herpetofauna.csv",
+      "label": "Herpetofauna",
+      "sublabel": "Spesies reptil & amfibi yang tercatat selama pemantauan",
+      "color": "#0A3A82",
+      "icon": "<svg viewBox='0 0 24 24' fill='none' stroke='var(--gold)' stroke-width='2'><ellipse cx='12' cy='12' rx='10' ry='6'/><path d='M2 12c0 3.3 4.5 6 10 6s10-2.7 10-6'/></svg>"
+    }
+  ]
+}

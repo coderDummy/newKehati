@@ -205,7 +205,29 @@ function buildTableHTML(rows, yearCols, yearLabels, headerColor) {
   return `<table><thead>${thead}</thead><tbody>${tbody}<tr class="total-row"><td colspan="3" class="font-bold">TOTAL</td>${totalCells}</tr></tbody></table>`;
 }
 
-// ── Table renderer ───────────────────────────────────────────
+// --- PLUGIN BARU UNTUK MENAMPILKAN ANGKA DI ATAS 2 GARIS ---
+const MULTI_LINE_LABEL_PLUGIN = {
+  id: 'multiLineLabels',
+  afterDatasetsDraw(chart) {
+    const { ctx, data } = chart;
+    ctx.save();
+    ctx.font = 'bold 11px Montserrat, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.textBaseline = 'bottom';
+    data.datasets.forEach((dataset, di) => {
+      ctx.fillStyle = dataset.borderColor; // Warna angka menyesuaikan warna garis (Biru/Merah)
+      const meta = chart.getDatasetMeta(di);
+      meta.data.forEach((point, i) => {
+        const val = dataset.data[i];
+        if (val == null || val === 0) return;
+        ctx.fillText(val.toLocaleString('id-ID'), point.x, point.y - 10);
+      });
+    });
+    ctx.restore();
+  }
+};
+
+// ── FUNGSI mountTable YANG DIPERBARUI (Merekam data per tahun) ──
 async function mountTable(cfg) {
   const container = document.getElementById(cfg.containerId);
   if (!container) return null;
@@ -226,16 +248,21 @@ async function mountTable(cfg) {
         <div class="table-scroll">${buildTableHTML(rows, yearCols, yearLabels, cfg.color)}</div>
       </div>`;
 
-    // --- LOGIKA HITUNG FAUNA ---
-    // Ambil kolom tahun terbaru (kolom terakhir)
+    // --- LOGIKA MEREKAM DATA PER TAHUN ---
     const latestYearCol = yearCols[yearCols.length - 1];
     const totalIndividu = rows.reduce((sum, r) => sum + (Number(r[latestYearCol]) || 0), 0);
 
-    // Kembalikan data ini agar bisa dijumlahkan oleh initChartsAndTables
+    const yearTotals = {};
+    yearLabels.forEach((y, i) => {
+        yearTotals[y] = rows.reduce((sum, r) => sum + (Number(r[yearCols[i]]) || 0), 0);
+    });
+
     return {
       id: cfg.containerId,
       speciesCount: rows.length,
-      individualCount: totalIndividu
+      individualCount: totalIndividu,
+      yearLabels: yearLabels,
+      yearTotals: yearTotals
     };
   } catch (e) {
     container.innerHTML = `<div class="loader-wrap text-[#c00]">Gagal memuat ${cfg.label}: ${e.message}</div>`;
@@ -243,39 +270,138 @@ async function mountTable(cfg) {
   }
 }
 
-// Fetch the clean JSON definition
+// ── FUNGSI initChartsAndTables YANG DIPERBARUI (Menyuntikkan Angka Flora & Fauna) ──
 async function initChartsAndTables() {
   try {
-    const response = await fetch('data/chart/gambut.json');
+    const url = typeof CHART_DATA_URL !== 'undefined' ? CHART_DATA_URL : 'data/chart/gambut.json';
+    const response = await fetch(url);
     const chartData = await response.json();
 
-    // Menjalankan semua render dan menangkap hasilnya
     const results = await Promise.all([
       ...chartData.CHARTS.map(mountChart),
       ...chartData.TABLES.map(mountTable)
     ]);
 
-    // Inisialisasi penghitung Fauna
+    // Variabel penampung
     let totalFaunaSpesies = 0;
     let totalFaunaIndividu = 0;
+    let totalFloraSpesies = 0;
+    let totalFloraIndividu = 0; // <-- TAMBAHAN UNTUK FLORA
 
+    const aggregateFauna = {};
+    const aggregateFlora = {};
+    let chartYearLabels = [];
+
+    // Mengumpulkan dan mengelompokkan data
     results.forEach(res => {
-      // Pastikan hasil adalah dari tabel dan BUKAN tabel flora
-      if (res && res.id && res.id !== 'table-flora') {
-        totalFaunaSpesies += res.speciesCount;
-        totalFaunaIndividu += res.individualCount;
+      if (res && res.id) {
+        if (res.id === 'table-flora') {
+          totalFloraSpesies = res.speciesCount;
+          totalFloraIndividu = res.individualCount; // <-- MENANGKAP TOTAL INDIVIDU FLORA TERBARU
+          chartYearLabels = res.yearLabels;
+          res.yearLabels.forEach(y => {
+            aggregateFlora[y] = res.yearTotals[y];
+          });
+        } else {
+          totalFaunaSpesies += res.speciesCount;
+          totalFaunaIndividu += res.individualCount;
+          res.yearLabels.forEach(y => {
+            aggregateFauna[y] = (aggregateFauna[y] || 0) + res.yearTotals[y];
+          });
+        }
       }
     });
 
-    // Update elemen HTML Card Fauna
+    // --- UPDATE ELEMEN HTML CARD FLORA ---
+    const elFloraSpesies = document.getElementById('statSpesies');
+    const elFloraTotal = document.getElementById('statTotal');
+    if (elFloraSpesies) elFloraSpesies.textContent = totalFloraSpesies.toLocaleString('id-ID');
+    if (elFloraTotal) elFloraTotal.textContent = totalFloraIndividu.toLocaleString('id-ID');
+
+    // --- UPDATE ELEMEN HTML CARD FAUNA ---
     const elFaunaSpesies = document.getElementById('statSpesiesFauna');
     const elFaunaTotal = document.getElementById('statTotalFauna');
+    if (elFaunaSpesies) elFaunaSpesies.textContent = totalFaunaSpesies.toLocaleString('id-ID');
+    if (elFaunaTotal) elFaunaTotal.textContent = totalFaunaIndividu.toLocaleString('id-ID');
 
-    if (elFaunaSpesies) {
-      elFaunaSpesies.textContent = totalFaunaSpesies.toLocaleString('id-ID');
-    }
-    if (elFaunaTotal) {
-      elFaunaTotal.textContent = totalFaunaIndividu.toLocaleString('id-ID');
+
+    // ── RENDER GRAFIK GARIS KOMPOSIT (FLORA VS FAUNA) ──
+    const canvasObj = document.getElementById('chartFloraFauna');
+    if (canvasObj && chartYearLabels.length > 0) {
+        const floraData = chartYearLabels.map(y => aggregateFlora[y] || 0);
+        const faunaData = chartYearLabels.map(y => aggregateFauna[y] || 0);
+        
+        const card = canvasObj.closest('.chart-card');
+        if (card) {
+            const titleEl = card.querySelector('.chart-title');
+            const subEl = card.querySelector('.chart-subtitle');
+            if (titleEl) titleEl.textContent = "Tren Individu Flora vs Fauna";
+            if (subEl) subEl.textContent = `Berdasarkan ${totalFloraSpesies} spesies flora dan ${totalFaunaSpesies} spesies fauna`;
+        }
+
+        new Chart(canvasObj.getContext('2d'), {
+            type: 'line',
+            data: {
+                labels: chartYearLabels,
+                datasets: [
+                    {
+                        label: 'Flora',
+                        data: floraData,
+                        borderColor: '#0A3A82', // Corporate Blue Pertamina
+                        backgroundColor: 'rgba(10, 58, 130, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#0A3A82',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    },
+                    {
+                        label: 'Fauna',
+                        data: faunaData,
+                        borderColor: '#ED2024', // Corporate Red Pertamina
+                        backgroundColor: 'rgba(237, 32, 36, 0.1)',
+                        borderWidth: 3,
+                        pointRadius: 6,
+                        pointBackgroundColor: '#ED2024',
+                        pointBorderColor: '#fff',
+                        pointBorderWidth: 2,
+                        fill: true,
+                        tension: 0.4
+                    }
+                ]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                layout: { padding: { top: 35 } },
+                plugins: {
+                    legend: { display: true, position: 'top', labels: { usePointStyle: true, font: {family: 'Montserrat', weight: 600} } },
+                    tooltip: {
+                        backgroundColor: '#0A3A82',
+                        titleColor: '#fff',
+                        bodyColor: '#fff',
+                        padding: 12,
+                        callbacks: {
+                            label: ctx => ` ${ctx.dataset.label}: ${ctx.parsed.y.toLocaleString('id-ID')} individu`
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: 'rgba(0,0,0,0.05)' },
+                        ticks: { color: '#888', font: { family: 'Montserrat' }, callback: v => v.toLocaleString('id-ID') }
+                    },
+                    x: {
+                        grid: { display: false },
+                        ticks: { color: '#888', font: { family: 'Montserrat', weight: 600 } }
+                    }
+                }
+            },
+            plugins: typeof MULTI_LINE_LABEL_PLUGIN !== 'undefined' ? [MULTI_LINE_LABEL_PLUGIN] : []
+        });
     }
 
   } catch (error) {

@@ -1,0 +1,128 @@
+{
+  "CHARTS": [
+    {
+      "canvasId": "chartKehatiFlora",
+      "type": "bar",
+      "labels": [
+        "2021",
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "values": [
+        2.62,
+        2.75,
+        2.8,
+        2.85,
+        2.91
+      ],
+      "title": "Indeks Kehati (H') Flora Metode Poligowo",
+      "subtitle": "Indeks Shannon-Wiener keanekaragaman vegetasi",
+      "color": "#0A3A82",
+      "yMin": 2.0,
+      "yAxisLabel": "Indeks Kehati",
+      "showValueLabels": true
+    },
+    {
+      "canvasId": "chartEkologiBurung",
+      "type": "bar",
+      "labels": [
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "values": [
+        2.4,
+        2.55,
+        2.65,
+        2.78
+      ],
+      "title": "Indeks Kehati (H') Burung Metode Poligowo",
+      "subtitle": "Indeks Shannon-Wiener keanekaragaman avifauna",
+      "color": "#0A3A82",
+      "yMin": 2.0,
+      "yAxisLabel": "Indeks Kehati",
+      "showValueLabels": true
+    },
+    {
+      "canvasId": "chartEkologiMamalia",
+      "type": "bar",
+      "labels": [
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "values": [
+        1.1,
+        1.25,
+        1.3,
+        1.45
+      ],
+      "title": "Indeks Kehati (H') Mamalia Metode Poligowo",
+      "subtitle": "Indeks Shannon-Wiener keanekaragaman mamalia",
+      "color": "#0A3A82",
+      "yMin": 0,
+      "yAxisLabel": "Indeks Kehati",
+      "showValueLabels": true
+    },
+    {
+      "canvasId": "chartEkologiHerpetofauna",
+      "type": "bar",
+      "labels": [
+        "2022",
+        "2023",
+        "2024",
+        "2025"
+      ],
+      "values": [
+        0.8,
+        0.95,
+        1.15,
+        1.3
+      ],
+      "title": "Indeks Kehati (H') Herpetofauna Metode Poligowo",
+      "subtitle": "Indeks Shannon-Wiener keanekaragaman reptil & amfibi",
+      "color": "#0A3A82",
+      "yMin": 0,
+      "yAxisLabel": "Indeks Kehati",
+      "showValueLabels": true
+    }
+  ],
+  "TABLES": [
+    {
+      "containerId": "table-flora",
+      "csv": "data/poligowo/data-flora.csv",
+      "label": "Flora \u2014 Vegetasi Poligowo",
+      "sublabel": "Komposisi vegetasi khas metode poligowo",
+      "color": "#0A3A82",
+      "icon": "<svg viewBox='0 0 24 24' fill='none' stroke='var(--gold)' stroke-width='2'><path d='M12 22V12M12 12C12 7 8 4 3 5c0 5 3 8 9 7M12 12c0-5 4-8 9-7-1 5-4 8-9 7'/></svg>"
+    },
+    {
+      "containerId": "table-burung",
+      "csv": "data/poligowo/data-burung.csv",
+      "label": "Avifauna (Burung)",
+      "sublabel": "Spesies burung yang tercatat selama pemantauan",
+      "color": "#0A3A82",
+      "icon": "<svg viewBox='0 0 24 24' fill='none' stroke='var(--gold)' stroke-width='2'><path d='M22 2l-7 20-4-9-9-4 20-7z'/></svg>"
+    },
+    {
+      "containerId": "table-mamalia",
+      "csv": "data/poligowo/data-mamalia.csv",
+      "label": "Mamalia",
+      "sublabel": "Spesies mamalia yang tercatat selama pemantauan",
+      "color": "#0A3A82",
+      "icon": "<svg viewBox='0 0 24 24' fill='none' stroke='var(--gold)' stroke-width='2'><circle cx='12' cy='8' r='4'/><path d='M4 20c0-4 3.6-7 8-7s8 3 8 7'/></svg>"
+    },
+    {
+      "containerId": "table-herpetofauna",
+      "csv": "data/poligowo/data-herpetofauna.csv",
+      "label": "Herpetofauna",
+      "sublabel": "Spesies reptil & amfibi yang tercatat selama pemantauan",
+      "color": "#0A3A82",
+      "icon": "<svg viewBox='0 0 24 24' fill='none' stroke='var(--gold)' stroke-width='2'><ellipse cx='12' cy='12' rx='10' ry='6'/><path d='M2 12c0 3.3 4.5 6 10 6s10-2.7 10-6'/></svg>"
+    }
+  ]
+}
