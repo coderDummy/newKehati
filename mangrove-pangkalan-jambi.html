@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Mangrove Desa Pangkalan Jambi — Kehati Pertamina RU II</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/papaparse@5.4.1/papaparse.min.js"></script>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:ital,wght@0,600;0,700;1,600&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet" />
+  <link rel="stylesheet" href="css/style.css" />
+</head>
+<body class="page-inner">
+
+<div id="header-placeholder"></div>
+
+<div class="hero" id="mangrove-hero">
+  <div class="hero-content">
+    <div class="hero-eyebrow">
+      <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+      Program Aktif 2022–2025
+    </div>
+    <h1 class="hero-title">Mangrove Desa<br/>Pangkalan Jambi</h1>
+    <div class="hero-meta">
+      <div class="hero-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z"/><circle cx="12" cy="10" r="3"/></svg> Bukit Batu, Bengkalis, Riau</div>
+      <!-- <div class="hero-meta-item"><svg viewBox="0 0 24 24" fill="none" stroke-width="2.5"><path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/></svg> PT KPI RU II Sungai Pakning</div> -->
+    </div>
+  </div>
+</div>
+
+<div class="content-wrap">
+  <div class="summary-cards reveal">
+    <div class="summary-card"><div class="summary-val" id="statSpesies">—</div><div class="summary-label">Total Spesies Flora</div></div>
+    <div class="summary-card"><div class="summary-val" id="statTotal">—</div><div class="summary-label">Total Individu Flora (Terbaru)</div></div>
+    <div class="summary-card"><div class="summary-val" id="statSpesiesFauna">—</div><div class="summary-label">Total Spesies Fauna</div></div>
+    <div class="summary-card"><div class="summary-val" id="statTotalFauna">—</div><div class="summary-label">Total Individu Fauna (Terbaru)</div></div>
+
+  </div>
+
+  <div class="desc-section reveal">
+    <div class="section-tag">Deskripsi Program</div>
+    <h2 class="section-title">Tentang Program Ini</h2>
+    <p>Program Mangrove Desa Pangkalan Jambi merupakan salah satu inisiatif konservasi ekosistem pesisir yang dikelola oleh PT Kilang Pertamina Internasional RU II Sungai Pakning di Kecamatan Bukit Batu, Kabupaten Bengkalis. Program ini berfokus pada rehabilitasi, pemantauan, dan pengelolaan ekosistem mangrove secara berkelanjutan.</p>
+    <p>Ekosistem mangrove memainkan peran vital sebagai zona penyangga antara daratan dan lautan. Keberadaannya bukan hanya penting sebagai habitat bagi ratusan spesies flora dan fauna, namun juga berfungsi sebagai pelindung alami pantai dari abrasi, serta berperan sebagai penyerap karbon (blue carbon) yang signifikan dalam upaya mitigasi perubahan iklim.</p>
+    <blockquote>"Pemantauan berkala menunjukkan tren keanekaragaman hayati yang terus terjaga — bukti nyata keberhasilan pendekatan konservasi berbasis data ilmiah."</blockquote>
+    <p>Pemantauan dilaksanakan setiap tahun menggunakan metode transek dan plot pengamatan yang terstandar. Data yang dikumpulkan mencakup komposisi jenis vegetasi dan kepadatan populasi per spesies, dan digunakan sebagai dasar intervensi konservasi yang tepat sasaran bersama masyarakat Desa Pangkalan Jambi.</p>
+  </div>
+
+  <div class="reveal mb-6">
+    <div class="section-tag">Visualisasi Data</div>
+    <h2 class="section-title">Total Individu per Tahun</h2>
+  </div>
+  <div class="chart-card reveal"><div class="chart-title"></div><div class="chart-subtitle"></div><div class="chart-container"><canvas id="chartFlora"></canvas></div></div>
+
+  <div class="reveal mb-6"><div class="section-tag">Data Flora</div><h2 class="section-title">Komposisi Vegetasi Mangrove</h2></div>
+  <div id="table-flora" class="table-section reveal"></div>
+
+  <div class="reveal mb-12 kehati-grid mt-12">
+    <div class="chart-card mb-0"><div class="chart-title"></div><div class="chart-subtitle"></div><div class="chart-container"><canvas id="chartKehatiFlora"></canvas></div></div>
+  </div>
+
+  <div class="fauna-divider reveal"><div class="fauna-divider-line"></div><div class="fauna-divider-label">Data Fauna</div><div class="fauna-divider-line"></div></div>
+
+  <div class="reveal mb-6"><div class="section-tag">Avifauna</div><h2 class="section-title">Daftar Spesies Burung</h2></div>
+  <div id="table-burung" class="table-section reveal"></div>
+  <div class="reveal mb-12 kehati-grid mt-12">
+    <div class="chart-card mb-0"><div class="chart-title"></div><div class="chart-subtitle"></div><div class="chart-container"><canvas id="chartEkologiBurung"></canvas></div></div>
+  </div>
+
+  <div class="reveal mb-6"><div class="section-tag">Mamalia</div><h2 class="section-title">Daftar Spesies Mamalia</h2></div>
+  <div id="table-mamalia" class="table-section reveal"></div>
+  <div class="reveal mb-12 kehati-grid mt-12">
+    <div class="chart-card mb-0"><div class="chart-title"></div><div class="chart-subtitle"></div><div class="chart-container"><canvas id="chartEkologiMamalia"></canvas></div></div>
+  </div>
+
+  <div class="reveal mb-6"><div class="section-tag">Herpetofauna</div><h2 class="section-title">Daftar Spesies Reptil & Amfibi</h2></div>
+  <div id="table-herpetofauna" class="table-section reveal"></div>
+  <div class="reveal mb-12 kehati-grid mt-12">
+    <div class="chart-card mb-0"><div class="chart-title"></div><div class="chart-subtitle"></div><div class="chart-container"><canvas id="chartEkologiHerpetofauna"></canvas></div></div>
+  </div>
+
+  <div class="reveal mb-6"><div class="section-tag">Insekta</div><h2 class="section-title">Daftar Spesies Kupu-kupu</h2></div>
+  <div id="table-kupukupu" class="table-section reveal"></div>
+  <div class="reveal mb-12 kehati-grid mt-12">
+    <div class="chart-card mb-0"><div class="chart-title"></div><div class="chart-subtitle"></div><div class="chart-container"><canvas id="chartEkologiKupukupu"></canvas></div></div>
+  </div>
+
+  <div class="reveal mb-6"><div class="section-tag">Insekta</div><h2 class="section-title">Daftar Spesies Capung</h2></div>
+  <div id="table-capung" class="table-section reveal"></div>
+  <div class="reveal mb-12 kehati-grid mt-12">
+    <div class="chart-card mb-0"><div class="chart-title"></div><div class="chart-subtitle"></div><div class="chart-container"><canvas id="chartEkologiCapung"></canvas></div></div>
+  </div>
+</div>
+
+<div id="footer-placeholder"></div>
+
+<script src="js/chart-engine.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

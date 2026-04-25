@@ -1,0 +1,56 @@
+[
+  {
+    "programName": "Mangrove Desa Pangkalan Jambi",
+    "description": "Program rehabilitasi dan konservasi ekosistem mangrove di Desa Pangkalan Jambi, Kecamatan Bukit Batu, Kabupaten Bengkalis. Program ini bertujuan untuk meningkatkan indeks keanekaragaman hayati flora dan fauna pesisir.",
+    "location": "Bukit Batu, Bengkalis",
+    "year": "2021–2025",
+    "slug": "mangrove-pangkalan-jambi.html",
+    "image": "/image/program/mangrove2.png",
+    "category": "Mangrove"
+  },
+  {
+    "programName": "Arboretum Gambut Bengkalis",
+    "description": "Kawasan konservasi dan edukasi berbasis lahan gambut yang bertujuan untuk melestarikan keanekaragaman hayati serta meningkatkan kesadaran masyarakat terhadap pentingnya ekosistem gambut.",
+    "location": "Bengkalis, Riau",
+    "year": "2021–2025",
+    "slug": "https://kehatipertaminaru2spk.com/#/arboretum",
+    "image": "image/program/arboretum.png",
+    "category": "Gambut"
+  },
+  {
+    "programName": "Penanaman Tanaman Khas Gambut Metode Poligowo",
+    "description": "Inisiatif penanaman tanaman khas lahan gambut menggunakan metode Poligowo yang berfokus pada peningkatan keberhasilan tumbuh serta pemulihan ekosistem gambut secara berkelanjutan.",
+    "location": "Bengkalis, Riau",
+    "year": "2022–2025",
+    "slug": "https://kehatipertaminaru2spk.com/#/poligowo",
+    "image": "/image/program/poligowo.png",
+    "category": "Gambut"
+  },
+  {
+    "programName": "Konservasi DAS Sungai Dayang",
+    "description": "Program perlindungan dan rehabilitasi Daerah Aliran Sungai (DAS) Sungai Dayang untuk menjaga kualitas air, mencegah erosi, serta mendukung keberlanjutan lingkungan sekitar.",
+    "location": "Bengkalis, Riau",
+    "year": "2022–2025",
+    "slug": "https://kehatipertaminaru2spk.com/#/konservasi-daerah-aliran",
+    "image": "https://kehatipertaminaru2spk.com/static/media/kda3.b7e8f7aa.jpeg",
+    "category": "DAS"
+  },
+  {
+    "programName": "Arboretum Gambut Sukajadi",
+    "description": "Pengembangan kawasan arboretum sebagai pusat konservasi, penelitian, dan edukasi untuk pelestarian tanaman endemik lahan gambut di wilayah Sukajadi.",
+    "location": "Sukajadi, Bengkalis",
+    "year": "2022–2025",
+    "slug": "https://kehatipertaminaru2spk.com/#/sukajadi",
+    "image": "/image/program/bird.png",
+    "category": "Gambut"
+  },
+  {
+    "programName": "Eduwisata Lebah Madu Tanjung Leban",
+    "description": "Program pemberdayaan masyarakat melalui eduwisata berbasis budidaya lebah madu, yang menggabungkan konservasi alam dengan peningkatan ekonomi lokal.",
+    "location": "Tanjung Leban, Bengkalis",
+    "year": "2023–2025",
+    "slug": "https://kehatipertaminaru2spk.com/#/lebah-tanjung-leban",
+    "image": "/image/program/eduwisata2.png",
+    "category": "Eduwisata"
+  }
+]

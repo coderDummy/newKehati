@@ -1,0 +1,546 @@
+:root {
+  /* Corporate Colors */
+  --perta-blue: #0A3A82; /* Biru Pertamina */
+  --perta-blue-dark: #072a60;
+  --perta-red: #ED2024; /* Merah Pertamina */
+  --perta-green: #7BB82A; /* Hijau (Aksen sekunder) */
+  --ink: #1a1a1a;
+  --bg-light: #ffffff;
+  --bg-section: #f4f6f9;
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { 
+  font-family: 'Montserrat', sans-serif; /* Update Tipografi */
+  background: var(--bg-light); 
+  color: var(--ink); 
+  overflow-x: hidden; 
+}
+
+/* ── NAV GLOBAL (TRANSPARENT TO SOLID SCROLL) ── */
+nav {
+  position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+  background: transparent; 
+  transition: all 0.3s ease;
+  padding: 0 4rem; display: flex; align-items: center; justify-content: space-between;
+  height: 85px; border-bottom: 1px solid rgba(255,255,255,0.1);
+}
+.nav-logo { display: flex; align-items: center; gap: 16px; text-decoration: none; }
+.logo-white { height: 35px; display: block; transition: 0.3s; }
+.logo-color { height: 35px; display: none; transition: 0.3s; }
+
+.nav-title { color: white; font-size: 0.85rem; line-height: 1.3; transition: color 0.3s; border-left: 1px solid rgba(255,255,255,0.3); padding-left: 16px; }
+.nav-title strong { display: block; font-weight: 700; letter-spacing: 0.02em; }
+.nav-title span { font-size: 0.75rem; font-weight: 500; opacity: 0.8; }
+
+.nav-links { display: flex; gap: 2.5rem; }
+.nav-links a { 
+  color: white; text-decoration: none; font-size: 0.9rem; font-weight: 600; 
+  transition: color 0.2s; position: relative;
+}
+.nav-links a:hover { color: var(--perta-blue); }
+
+.nav-burger { display: none; flex-direction: column; gap: 5px; cursor: pointer; }
+.nav-burger span { width: 24px; height: 2px; background: white; border-radius: 2px; transition: all 0.3s; }
+.nav-back { display: flex; align-items: center; gap: 8px; color: white; font-weight: 600; text-decoration: none; font-size: 0.9rem; transition: color 0.2s; }
+.nav-back:hover { color: var(--perta-blue); }
+
+/* --- NAV SCROLLED STATE (PUTIH) --- */
+nav.nav-scrolled {
+  background: #ffffff;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  border-bottom: 1px solid transparent;
+  height: 75px;
+}
+nav.nav-scrolled .logo-white { display: none; }
+nav.nav-scrolled .logo-color { display: block; }
+nav.nav-scrolled .nav-title { color: var(--ink); border-left-color: #ddd; }
+nav.nav-scrolled .nav-links a, nav.nav-scrolled .nav-back { color: var(--ink); }
+nav.nav-scrolled .nav-links a:hover, nav.nav-scrolled .nav-back:hover { color: var(--perta-blue); }
+nav.nav-scrolled .nav-burger span { background: var(--ink); }
+
+/* Switcher Header/Footer by Body Class */
+.page-index .show-on-index { display: flex !important; }
+.page-index .show-block-on-index { display: block !important; }
+.page-inner .show-on-inner { display: flex !important; }
+.page-inner .show-block-on-inner { display: block !important; }
+
+/* ── HERO ── */
+.page-index .hero {
+  min-height: 100vh;
+  /* Overlay gelap kebiruan agar teks putih terbaca jelas */
+  background: linear-gradient(to bottom, rgba(10,58,130,0.6) 0%, rgba(10,58,130,0.3) 50%, rgba(10,58,130,0.8) 100%),
+              url('https://images.unsplash.com/photo-1586348943529-beaae6c28db9?w=1800&q=85') center/cover no-repeat;
+  display: flex; align-items: center; justify-content: center; text-align: center; padding: 120px 2rem 80px; position: relative;
+}
+.page-index .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 120px; background: linear-gradient(to bottom, transparent, var(--bg-light)); }
+.page-inner .hero {
+  height: 100vh; min-height: 560px;
+  display: flex; flex-direction: column; align-items: flex-start; justify-content: flex-end; padding: 0 5vw 5vh; position: relative;
+}
+#mangrove-hero {   background: linear-gradient(to bottom, rgba(10,58,130,0.4) 0%, rgba(10,58,130,0.2) 40%, rgba(10,58,130,0.7) 100%),
+              url('/image/program/mangrove2.png') center/cover no-repeat; }
+.page-inner .hero::after { content: ''; position: absolute; bottom: 0; left: 0; right: 0; height: 140px; background: linear-gradient(to bottom, transparent, var(--bg-light)); }
+
+.hero-content { position: relative; z-index: 1; max-width: 780px; }
+.hero-eyebrow {
+  display: inline-flex; align-items: center; gap: 10px; background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.4); backdrop-filter: blur(4px);
+  border-radius: 100px; padding: 6px 18px; font-size: 0.75rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase;
+  color: white; margin-bottom: 1.5rem; animation: fadeUp 0.6s ease both;
+}
+/* Menghilangkan Font Playfair untuk konsistensi Sans-Serif */
+.page-index .hero-title, .page-inner .hero-title { font-family: 'Montserrat', sans-serif; font-size: clamp(2.6rem, 6vw, 4.2rem); line-height: 1.1; font-weight: 700; color: white; margin-bottom: 1.25rem; animation: fadeUp 0.6s 0.1s ease both; }
+.page-index .hero-title em { font-style: normal; color: #adc32b; text-decoration: underline; text-decoration-color: #adc32b; }
+.hero-sub { font-size: 1.05rem; line-height: 1.75; color: rgba(255,255,255,0.9); font-weight: 500; max-width: 580px; margin: 0 auto 2.5rem; animation: fadeUp 0.6s 0.2s ease both; }
+
+/* Tombol Biru Aktif */
+.hero-cta { display: inline-flex; align-items: center; gap: 10px; background: var(--perta-blue); color: white; padding: 14px 32px; border-radius: 4px; font-size: 0.95rem; font-weight: 600; text-decoration: none; border: none; cursor: pointer; transition: background 0.2s, transform 0.2s; animation: fadeUp 0.6s 0.3s ease both; }
+.hero-cta:hover { background: var(--perta-blue-dark); transform: translateY(-2px); }
+
+/* ── LAYOUT & SECTIONS ── */
+.section { padding: 80px 2rem; background: var(--bg-light); }
+.section-inner { max-width: 1100px; margin: 0 auto; }
+.content-wrap { max-width: 1100px; margin: 0 auto; padding: 60px 2rem; }
+.section-tag { display: inline-flex; align-items: center; gap: 8px; font-size: 0.75rem; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--perta-blue); margin-bottom: 1rem; }
+.section-tag::before { content: ''; width: 24px; height: 2px; background: var(--perta-red); border-radius: 2px; }
+.section-title { font-size: clamp(1.8rem, 3.5vw, 2.4rem); font-weight: 700; color: var(--perta-blue); margin-bottom: 1.25rem; line-height: 1.25; }
+
+/* ── COMPONENTS ── */
+.stats-bar { background: var(--perta-blue); padding: 2rem 2rem; }
+.stats-grid { max-width: 960px; margin: 0 auto; display: grid; grid-template-columns: repeat(4, 1fr); }
+.stat-item { text-align: center; padding: 0 1.5rem; border-right: 1px solid rgba(255,255,255,0.2); }
+.stat-item:last-child { border-right: none; }
+.stat-number { font-size: 2.4rem; font-weight: 700; color: white; line-height: 1; }
+.stat-label { font-size: 0.85rem; color: rgba(255,255,255,0.7); font-weight: 500; margin-top: 8px; }
+
+.latar-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5rem; align-items: center; }
+.latar-text p, .desc-section p { font-size: 1rem; line-height: 1.8; color: #555; margin-bottom: 1.2rem; font-weight: 500; }
+.latar-visual { position: relative; }
+.latar-img { width: 100%; aspect-ratio: 4/5; object-fit: cover; border-radius: 4px; }
+.latar-badge { position: absolute; bottom: -20px; left: -20px; background: var(--perta-blue); color: white; padding: 20px 24px; border-radius: 4px; box-shadow: 0 8px 24px rgba(10,58,130,0.2); }
+.latar-badge strong { display: block; font-size: 1.8rem; font-weight: 700;}
+
+.programs-section { background: var(--bg-section); padding: 80px 2rem; }
+.programs-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(320px, 1fr)); gap: 2rem; margin-top: 3rem; }
+.program-card { 
+  background: white; 
+  border-radius: 8px; 
+  overflow: hidden; 
+  box-shadow: 0 4px 20px rgba(0,0,0,0.04); 
+  transition: transform 0.3s, box-shadow 0.3s; 
+  cursor: pointer; 
+  text-decoration: none; 
+  color: inherit; 
+  
+  /* Tambahan untuk layout yang rata */
+  display: flex; 
+  flex-direction: column; 
+  height: 100%; 
+}.program-card:hover { transform: translateY(-6px); box-shadow: 0 12px 30px rgba(0,0,0,0.08); }
+.card-img { width: 100%; height: 220px; object-fit: cover; display: block; transition: transform 0.5s; }
+.program-card:hover .card-img { transform: scale(1.05); }
+.card-img-wrap { overflow: hidden; }
+.card-body { 
+  padding: 1.5rem; 
+  
+  /* Tambahan agar bisa mendorong footer ke bawah */
+  display: flex; 
+  flex-direction: column; 
+  flex-grow: 1; 
+}
+.card-cat { font-size: 0.75rem; font-weight: 700; color: var(--perta-red); margin-bottom: 8px; }
+.card-title { font-size: 1.25rem; font-weight: 700; color: var(--perta-blue); margin-bottom: 10px; line-height: 1.3; }
+.card-desc { font-size: 0.9rem; color: #666; line-height: 1.6; margin-bottom: 1.5rem; }
+.card-meta { 
+  display: flex; 
+  align-items: center; /* Menjaga lokasi, tahun, dan panah sejajar secara vertikal */
+  gap: 10px; 
+  border-top: 1px solid #eee; 
+  padding-top: 1rem; 
+  margin-top: auto; 
+  width: 100%;
+}
+
+/* Lokasi tetap fleksibel (bisa 2 baris) */
+.card-loc { 
+  display: flex; 
+  align-items: flex-start; 
+  gap: 6px; 
+  font-size: 0.8rem; 
+  font-weight: 500; 
+  color: #888;
+  white-space: normal; 
+  line-height: 1.4; 
+  flex-shrink: 1; 
+}
+
+/* Tahun sekarang menjadi penentu posisi ke kanan */
+.card-year { 
+  display: flex; 
+  align-items: center; 
+  gap: 6px; 
+  font-size: 0.8rem; 
+  font-weight: 500; 
+  color: #888;
+  white-space: nowrap; 
+  flex-shrink: 0; 
+  
+  /* KUNCI: margin-left auto pada tahun mendorong dirinya dan arrow ke pojok kanan */
+  margin-left: auto; 
+}
+
+/* Pastikan icon lokasi tidak ikut mengecil atau turun ke bawah */
+.card-loc svg {
+  flex-shrink: 0; 
+  margin-top: 2px; /* Penyesuaian agar icon sejajar pas dengan teks baris pertama */
+}
+.card-year { 
+  display: flex; 
+  align-items: center; 
+  gap: 6px; 
+  font-size: 0.8rem; 
+  font-weight: 500; 
+  color: #888;
+  
+  /* Logika untuk tahun 1 baris */
+  white-space: nowrap; /* WAJIB: Paksa teks jadi 1 baris */
+  flex-shrink: 0; /* WAJIB: Jangan biarkan tahun menyusut/tergencet */
+}
+/* Arrow tetap konsisten mengikuti tahun */
+.card-arrow { 
+  width: 36px; 
+  height: 36px; 
+  border-radius: 50%; 
+  background: var(--bg-section); 
+  display: flex; 
+  align-items: center; 
+  justify-content: center; 
+  transition: background 0.2s; 
+  flex-shrink: 0; 
+}
+
+.program-card:hover .card-arrow { background: var(--perta-blue); }
+.card-arrow svg { width: 16px; height: 16px; stroke: var(--perta-blue); transition: 0.2s; }
+.program-card:hover .card-arrow svg { stroke: white; }
+
+/* ── INNER PAGE SPECIFIC ── */
+/* Susunan Grid Card */
+.summary-cards { 
+  display: grid; 
+  grid-template-columns: repeat(4, 1fr); 
+  gap: 1.25rem; 
+  margin-bottom: 60px; 
+}
+
+/* Base Card & Efek Hover Background */
+.summary-card { 
+  background: white; 
+  border-radius: 8px; 
+  padding: 1.5rem; 
+  box-shadow: 0 2px 12px rgba(0,0,0,0.04); 
+  transition: all 0.3s ease; /* Tambahkan transisi agar perubahan warnanya mulus */
+  cursor: pointer;
+}
+.summary-card:hover { 
+  background-color: var(--perta-blue); 
+  transform: translateY(-5px); /* Opsional: Bikin card naik sedikit saat di hover */
+}
+
+/* Warna Default Elemen Anak (Perhatikan tambahan transition) */
+.summary-val { 
+  font-size: 2.2rem; 
+  font-weight: 700; 
+  color: var(--perta-blue); 
+  line-height: 1; 
+  transition: color 0.3s ease; 
+}
+.summary-label { 
+  font-size: 0.85rem; 
+  font-weight: 600; 
+  color: #777; 
+  margin-top: 8px; 
+  transition: color 0.3s ease; 
+}
+
+/* ── KUNCI PERBAIKANNYA DI SINI ── */
+/* "Hai .summary-val dan .summary-label, jika induk kalian (.summary-card) sedang di-hover, kalian HARUS berubah jadi putih!" */
+.summary-card:hover .summary-val,
+.summary-card:hover .summary-label {
+  color: white;
+}
+
+/* ── SLIDER OTHER PROGRAMS ── */
+.other-programs { padding: 60px 0; background: var(--bg-section); }
+.slider-container { display: flex; gap: 1.5rem; overflow-x: auto; padding: 20px 2rem 40px; scroll-snap-type: x mandatory; scrollbar-width: none; }
+.slider-container::-webkit-scrollbar { display: none; }
+.slider-card { flex: 0 0 320px; scroll-snap-align: start; background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 15px rgba(0,0,0,0.04); text-decoration: none; color: inherit; transition: transform 0.3s; }
+.slider-card:hover { transform: translateY(-5px); }
+.slider-img { width: 100%; height: 180px; object-fit: cover; }
+.slider-body { padding: 1.25rem; }
+
+/* ── NEW PERTAMINA FOOTER ── */
+.pertamina-footer {
+  background: white;
+  color: var(--ink);
+  padding: 4rem 2rem 2rem;
+  text-align: center;
+}
+.footer-logo img {
+  height: 45px;
+  margin: 0 auto 1.5rem;
+  display: block;
+}
+.footer-contact p {
+  font-size: 0.95rem;
+  color: #444;
+  margin-bottom: 0.5rem;
+}
+.footer-divider {
+  width: 100%;
+  max-width: 1100px;
+  margin: 2rem auto;
+  border: 0;
+  height: 1px;
+  background: #eaeaea;
+}
+.footer-socials {
+  display: flex;
+  justify-content: center;
+  gap: 1.5rem;
+  margin-bottom: 2rem;
+}
+.footer-socials a {
+  display: inline-flex; align-items: center; justify-content: center;
+  color: var(--ink); transition: color 0.2s, transform 0.2s;
+}
+.footer-socials a:hover { color: var(--perta-blue); transform: translateY(-2px); }
+.footer-socials svg { width: 22px; height: 22px; fill: currentColor; }
+.footer-bottom {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+  font-size: 0.85rem;
+  color: #555;
+}
+.footer-bottom a { color: #555; text-decoration: underline; font-weight: 500; }
+.footer-bottom a:hover { color: var(--perta-blue); }
+.footer-bottom .sep { color: #ccc; }
+
+/* ── UTILITIES & LOADER ── */
+.loader, .loader-wrap { text-align: center; display: flex; flex-direction: column; align-items: center; padding: 2.5rem; gap: 10px; color: #888; font-size: 0.875rem; }
+.spinner { width: 32px; height: 32px; border: 3px solid rgba(0,0,0,0.08); border-top-color: var(--perta-blue); border-radius: 50%; animation: spin 0.7s linear infinite; }
+@keyframes fadeUp { from { opacity:0; transform:translateY(20px); } to { opacity:1; transform:none; } }
+@keyframes spin { to { transform: rotate(360deg); } }
+.reveal { opacity: 0; transform: translateY(28px); transition: opacity 0.65s ease, transform 0.65s ease; }
+.reveal.visible { opacity: 1; transform: none; }
+
+/* ── RESPONSIVE ── */
+@media (max-width: 768px) {
+/* 1. Header & Navigasi Mobile */
+  nav { 
+    padding: 0 1.25rem; 
+    height: 70px; 
+  }
+  nav.nav-scrolled { height: 60px; }
+  
+  .logo-white, .logo-color { 
+    height: 28px; 
+  }
+  .nav-title { 
+    display: none; 
+  }
+  
+  /* --- KUNCI PERBAIKANNYA DI SINI --- */
+  /* Kita gunakan penargetan yang lebih kuat untuk mengalahkan class "show-on-index" */
+  .page-index .nav-links.show-on-index,
+  .nav-links { 
+    display: none !important; 
+  } 
+  
+  /* Pastikan hanya burger menu yang tampil di pojok kanan */
+  .page-index .nav-burger.show-on-index,
+  .nav-burger { 
+    display: flex !important; 
+    margin-left: auto; /* Dorong burger menu mentok ke kanan */
+  }
+  
+  /* Rapikan tombol Back to Home (Inner) */
+  .nav-back { 
+    font-size: 0.8rem; 
+    gap: 6px; 
+    white-space: nowrap; 
+    margin-left: auto;
+  }
+  .nav-title { display: none; /* Sembunyikan text title di mobile agar rapi */ }
+  .nav-links { display: none !important; }
+  .page-index .nav-burger { display: flex !important; }
+  .latar-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+  .stat-item { border-right: none; }
+}
+
+/* ── CHARTS & TABLES (CORPORATE THEME) ── */
+.chart-card { background: white; border-radius: 8px; padding: 2.5rem; box-shadow: 0 4px 20px rgba(0,0,0,0.04); margin-bottom: 3rem; }
+.chart-title { font-size: 1.15rem; font-weight: 700; color: var(--perta-blue); margin-bottom: 0.3rem; }
+.chart-subtitle { font-size: 0.85rem; color: #888; margin-bottom: 1.5rem; font-weight: 500; }
+.chart-container { position: relative; height: 300px; width: 100%; }
+
+.table-section { margin-bottom: 3rem; }
+.table-card { background: white; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 20px rgba(0,0,0,0.04); }
+.table-header { padding: 1.25rem 2rem; display: flex; align-items: center; gap: 16px; }
+.table-header-icon { width: 40px; height: 40px; border-radius: 8px; flex-shrink: 0; background: rgba(255,255,255,0.15); display: flex; align-items: center; justify-content: center; }
+.table-header-icon svg { width: 20px; height: 20px; stroke: white; }
+.table-header-text strong { display: block; color: white; font-size: 1.05rem; font-weight: 700; }
+.table-header-text span { color: rgba(255,255,255,0.7); font-size: 0.8rem; font-weight: 500; }
+
+.table-scroll { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+table { width: 100%; border-collapse: collapse; text-align: left; }
+thead tr.thead-group th { font-size: 0.75rem; font-weight: 700; letter-spacing: 0.05em; text-transform: uppercase; padding: 0.85rem 1.2rem; white-space: nowrap; border-right: 1px solid rgba(255,255,255,0.1); color: rgba(255,255,255,0.9); }
+thead tr.thead-group th.th-jumlah { text-align: center; border-right: none; }
+thead tr.thead-years th { background: #f4f6f9; color: #555; font-size: 0.75rem; font-weight: 700; padding: 0.75rem 1.2rem; text-align: right; white-space: nowrap; border-right: 1px solid #e5e7eb; }
+thead tr.thead-years th:last-child { border-right: none; }
+thead tr.thead-years th.th-fixed { text-align: left; background: #eaedf2; }
+
+tbody tr { border-bottom: 1px solid #f4f6f9; transition: background 0.2s; }
+tbody tr:last-child { border-bottom: none; }
+tbody tr:hover { background: #f9fafb; }
+tbody td { padding: 1rem 1.2rem; font-size: 0.9rem; color: #444; font-weight: 500; }
+.td-italic { font-style: italic; color: #666; }
+.td-num { text-align: right; font-variant-numeric: tabular-nums; font-weight: 600; }
+.td-dash { text-align: right; color: #bbb; }
+
+tr.total-row td { background: #f4f6f9; font-weight: 700; color: var(--perta-blue); border-top: 2px solid #e5e7eb; }
+tr.total-row .td-num { color: var(--perta-blue); }
+
+/* ── DIVIDER DATA FAUNA ── */
+.fauna-divider { display: flex; align-items: center; gap: 1rem; margin: 4rem 0 3rem; }
+.fauna-divider-line { flex: 1; height: 1px; background: #ddd; }
+.fauna-divider-label { font-size: 1.4rem; font-weight: 700; color: var(--perta-blue); white-space: nowrap; }
+
+body.page-inner {
+  background: #f4f7f9; /* Abu-abu kebiruan sangat muda, khas corporate */
+}
+
+/* ── PERBAIKAN HERO INNER PAGE (PROGRAM) ── */
+.page-inner .hero {
+  justify-content: center; /* Mendorong konten agar berada di tengah, tidak tertutup gradien bawah */
+  padding-top: 140px; /* Memberi jarak aman agar tidak tertutup transparent header */
+}
+
+.page-inner .hero-title {
+  color: #ffffff !important;
+  text-shadow: 0 4px 12px rgba(0,0,0,0.3); /* Memberi efek bayangan agar teks pop-out dari gambar background */
+  opacity: 1; /* Mencegah bug teks menghilang karena animasi */
+}
+
+/* Mengembalikan styling lokasi & meta yang sempat terhapus */
+.hero-meta { 
+  display: flex; 
+  flex-wrap: wrap; 
+  gap: 1.5rem; 
+  margin-top: 1rem;
+  animation: fadeUp 0.6s 0.2s ease forwards; 
+}
+
+.hero-meta-item { 
+  display: flex; 
+  align-items: center; 
+  gap: 8px; 
+  color: rgba(255, 255, 255, 0.95); /* Putih bersih */
+  font-size: 0.95rem; 
+  font-weight: 500; 
+  text-shadow: 0 2px 8px rgba(0,0,0,0.4); /* Membantu keterbacaan di atas gambar mangrove */
+}
+
+.hero-meta-item svg { 
+  width: 18px; 
+  height: 18px; 
+  stroke: var(--perta-red); /* Menggunakan aksen merah Pertamina untuk icon */
+}
+
+.page-inner .hero-eyebrow {
+  background: rgba(10, 58, 130, 0.6); /* Background biru transparan khas Pertamina */
+  border-color: rgba(255,255,255,0.2);
+}
+
+/* ════════════════════════════════════════════════════════════
+   ── RESPONSIVE (MOBILE & TABLET FIXES) ──
+════════════════════════════════════════════════════════════ */
+
+@media (max-width: 992px) {
+  nav { padding: 0 2rem; }
+}
+
+@media (max-width: 768px) {
+  /* 1. Header & Navigasi Mobile */
+  nav { 
+    padding: 0 1.25rem; /* Kurangi jarak kiri-kanan agar lega */
+    height: 70px; 
+  }
+  nav.nav-scrolled { height: 60px; }
+  
+  .logo-white, .logo-color { 
+    height: 28px; /* Perkecil logo sedikit di HP */
+  }
+  .nav-title { 
+    display: none; /* Sembunyikan teks "KEHATI RU II" agar tidak sesak */
+  }
+  
+  /* Sembunyikan menu teks, tampilkan burger (Index) */
+  .nav-links { display: none !important; } 
+  .page-index .nav-burger { display: flex !important; }
+  
+  /* Rapikan tombol Back to Home (Inner) */
+  .nav-back { 
+    font-size: 0.8rem; 
+    gap: 6px; 
+    white-space: nowrap; /* Cegah teks turun baris atau terpotong */
+  }
+
+  /* 2. Layout, Jarak, dan Konten Utama */
+  .latar-grid { grid-template-columns: 1fr; gap: 2.5rem; }
+  .stats-grid { grid-template-columns: repeat(2, 1fr); gap: 1.5rem; }
+  .stat-item { border-right: none; }
+  
+  .section, .programs-section { padding: 60px 1.25rem; }
+  .content-wrap { padding: 40px 1.25rem; }
+
+  /* 3. Summary Cards (Total Spesies, dll) */
+  .summary-cards {
+    grid-template-columns: 1fr !important; /* Paksa tumpuk atas-bawah */
+    gap: 1rem;
+    margin-bottom: 40px;
+  }
+  .summary-card { 
+    padding: 1.25rem; 
+  }
+
+  /* 4. Penyesuaian Chart & Tabel di HP */
+  .chart-card { padding: 1.5rem; margin-bottom: 2rem; }
+  .table-header { flex-direction: column; align-items: flex-start; gap: 10px; }
+}
+
+@media (max-width: 480px) {
+  /* Penyesuaian ekstra untuk layar HP yang sangat kecil (seperti iPhone SE) */
+  .stats-grid { grid-template-columns: 1fr; gap: 1.5rem; }
+  .page-index .hero-title, .page-inner .hero-title { font-size: 2.2rem; }
+  .hero-sub { font-size: 0.95rem; }
+  .summary-val { font-size: 1.8rem; }
+}
+
+.hero-scroll {
+    position: absolute; bottom: 140px; left: 50%; transform: translateX(-50%);
+    display: flex; flex-direction: column; align-items: center; gap: 8px;
+    color: rgba(255,255,255,0.5); font-size: 0.7rem; letter-spacing: 0.1em; text-transform: uppercase;
+    z-index: 2;
+}
+.hero-scroll::after {
+    content: '';
+    width: 1px; height: 48px;
+    background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
+    animation: scrollLine 1.6s ease infinite;
+}
+
+
+
