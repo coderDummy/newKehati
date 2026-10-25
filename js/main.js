@@ -26,6 +26,159 @@ function initHeaderScroll() {
   });
 }
 
+const DASHBOARD_SPREADSHEETS = [
+  { name: 'Arboretum', id: '17ubjLK2F0K_UiCaFN5A7uqkZzFlkDYty' },
+  { name: 'DAS', id: '1ab_fzvZXTGG2Fxt3QiW3aoOmHQgvnAnu' },
+  { name: 'Eduwisata', id: '1Y3Uzp76ekXiw39P7QcCSPdZB5isx0C5U' },
+  { name: 'Mangrove Pangkalan Jambi', id: '1rprGqN0CCYmxpHhf7krWS3n087QAwixQ' },
+  { name: 'Poligowo', id: '1nVc9ZILH8q8H_0WS3RxIhBoJpiMfZQK0' },
+  { name: 'Sukajadi', id: '1BAUCogyOJG_k7PNr8IxcZBTUVsJHJNY-' },
+];
+const dashboardSheetPromises = new Map();
+
+async function loadDashboardSheet(spreadsheet, sheetName) {
+  const cacheKey = `${spreadsheet.id}:${sheetName}`;
+  if (!dashboardSheetPromises.has(cacheKey)) {
+    const request = (async () => {
+      const url = new URL(`https://docs.google.com/spreadsheets/d/${spreadsheet.id}/gviz/tq`);
+      url.searchParams.set('tqx', 'out:csv');
+      url.searchParams.set('sheet', sheetName);
+
+      const response = await fetch(url);
+      if (!response.ok) throw new Error(`Gagal mengambil sheet ${sheetName} dari ${spreadsheet.name} (${response.status})`);
+
+      const { data, errors, meta } = Papa.parse(await response.text(), {
+        header: true,
+        skipEmptyLines: true,
+        dynamicTyping: true,
+      });
+      if (errors.length) throw new Error(`Format sheet ${sheetName} di ${spreadsheet.name} tidak valid: ${errors[0].message}`);
+      if (!meta.fields?.includes('No')) throw new Error(`Kolom "No" tidak ditemukan pada sheet ${sheetName} di ${spreadsheet.name}`);
+
+      return data.filter(row => typeof row.No === 'number');
+    })();
+    dashboardSheetPromises.set(cacheKey, request);
+  }
+
+  return dashboardSheetPromises.get(cacheKey);
+}
+
+function getDashboardYearColumns(rows) {
+  if (!rows.length) throw new Error('Sheet tidak memiliki baris data');
+  const columns = Object.keys(rows[0]).filter(column => /^Jumlah \d{4}$/.test(column));
+  columns.sort((left, right) => Number(left.slice(7)) - Number(right.slice(7)));
+  if (!columns.length) throw new Error('Kolom tahun "Jumlah YYYY" tidak ditemukan');
+  return columns;
+}
+
+function getLatestCommonDashboardYear(sheets) {
+  const commonYears = sheets
+    .map(({ rows }) => getDashboardYearColumns(rows))
+    .map(columns => new Set(columns.map(column => column.slice(7))))
+    .reduce((years, nextYears) => new Set([...years].filter(year => nextYears.has(year))));
+  const latestYear = [...commonYears].sort((left, right) => Number(right) - Number(left))[0];
+  if (!latestYear) throw new Error('Tidak ada tahun data yang sama di semua spreadsheet');
+  return latestYear;
+}
+
+function parseDashboardAbundance(value) {
+  if (typeof value === 'number') return Number.isFinite(value) ? value : 0;
+  const normalizedValue = String(value ?? '').trim().replace(/,/g, '');
+  const abundance = Number(normalizedValue);
+  return Number.isFinite(abundance) ? abundance : 0;
+}
+
+function aggregateDashboardRows(sheets, year) {
+  const countsBySpecies = new Map();
+  let total = 0;
+
+  sheets.forEach(({ spreadsheet, rows }) => {
+    const yearColumn = `Jumlah ${year}`;
+    rows.forEach((row, index) => {
+      const abundance = parseDashboardAbundance(row[yearColumn]);
+      if (abundance <= 0) return;
+
+      total += abundance;
+      const scientificName = String(row['Nama Ilmiah'] ?? '').trim().toLocaleLowerCase('id');
+      const speciesKey = scientificName || `${spreadsheet.id}:${row.No ?? index}`;
+      countsBySpecies.set(speciesKey, (countsBySpecies.get(speciesKey) ?? 0) + abundance);
+    });
+  });
+
+  if (total <= 0) throw new Error(`Tidak ada jumlah spesies pada tahun ${year}`);
+  return { counts: [...countsBySpecies.values()], total };
+}
+
+function calculateShannonIndex(counts) {
+  const total = counts.reduce((sum, value) => sum + value, 0);
+  return -counts.reduce((sum, value) => {
+    const proportion = value / total;
+    return sum + proportion * Math.log(proportion);
+  }, 0);
+}
+
+async function updateDashboardStats({ year, counts, total, valueId, labelId, valueType, label }) {
+  const valueElement = document.getElementById(valueId);
+  const labelElement = document.getElementById(labelId);
+  if (!valueElement || !labelElement) return;
+
+  valueElement.textContent = valueType === 'total'
+    ? new Intl.NumberFormat('id-ID').format(total)
+    : calculateShannonIndex(counts).toFixed(2);
+  labelElement.textContent = `${label} (${year})`;
+}
+
+async function loadDashboardStats() {
+  try {
+    const [floraSheets, avifaunaSheets] = await Promise.all(['Flora', 'Avifauna'].map(sheetName =>
+      Promise.all(DASHBOARD_SPREADSHEETS.map(async spreadsheet => ({
+        spreadsheet,
+        rows: await loadDashboardSheet(spreadsheet, sheetName),
+      })))
+    ));
+    const floraYear = getLatestCommonDashboardYear(floraSheets);
+    const avifaunaYear = getLatestCommonDashboardYear(avifaunaSheets);
+    const flora = aggregateDashboardRows(floraSheets, floraYear);
+    const avifauna = aggregateDashboardRows(avifaunaSheets, avifaunaYear);
+
+    await Promise.all([
+    updateDashboardStats({
+      year: floraYear,
+      counts: flora.counts,
+      total: flora.total,
+      valueId: 'statMangrove',
+      labelId: 'statMangroveLabel',
+      valueType: 'total',
+      label: 'Total Individu Flora',
+    }),
+    updateDashboardStats({
+      year: floraYear,
+      counts: flora.counts,
+      total: flora.total,
+      valueId: 'statFloraIndex',
+      labelId: 'statFloraIndexLabel',
+      valueType: 'shannon',
+      label: 'Indeks Kehati Flora',
+    }),
+    updateDashboardStats({
+      year: avifaunaYear,
+      counts: avifauna.counts,
+      total: avifauna.total,
+      valueId: 'statAvifaunaIndex',
+      labelId: 'statAvifaunaIndexLabel',
+      valueType: 'shannon',
+      label: 'Indeks Kehati Avifauna',
+    }),
+    ]);
+  } catch (error) {
+    ['statMangrove', 'statFloraIndex', 'statAvifaunaIndex'].forEach(id => {
+      const element = document.getElementById(id);
+      if (element) element.textContent = '—';
+    });
+    console.error('Gagal memuat statistik gabungan dari seluruh spreadsheet:', error);
+  }
+}
+
 // Memuat Program List di halaman Index
 async function loadPrograms() {
   const grid = document.getElementById('programGrid');
@@ -129,7 +282,7 @@ async function initApp() {
 
     // 3. Conditional injection based on page
     if (isIndex) {
-      await loadPrograms();
+      await Promise.all([loadPrograms(), loadDashboardStats()]);
     } else {
       // Inject Other Programs BEFORE Footer
       const otherRes = await fetch('components/other-programs.html');
