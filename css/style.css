@@ -9,11 +9,19 @@
   --bg-section: #f4f6f9;
 }
 * { margin: 0; padding: 0; box-sizing: border-box; }
+html {
+  scroll-behavior: smooth;
+  scroll-padding-top: 90px;
+}
 body { 
   font-family: 'Montserrat', sans-serif; /* Update Tipografi */
   background: var(--bg-light); 
   color: var(--ink); 
   overflow-x: hidden; 
+}
+
+@media (prefers-reduced-motion: reduce) {
+  html { scroll-behavior: auto; }
 }
 
 /* ── NAV GLOBAL (TRANSPARENT TO SOLID SCROLL) ── */
@@ -542,6 +550,5 @@ body.page-inner {
     background: linear-gradient(to bottom, rgba(255,255,255,0.4), transparent);
     animation: scrollLine 1.6s ease infinite;
 }
-
 
 
