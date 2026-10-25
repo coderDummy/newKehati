@@ -1,19 +1,162 @@
 const chartInstances = {};
+const csvLoadPromises = new Map();
 
-function loadCSV(path) {
-  return new Promise((resolve, reject) => {
-    Papa.parse(path, {
-      download: true, header: true,
-      skipEmptyLines: true, dynamicTyping: true,
-      complete: ({ data }) => resolve(data.filter(r => typeof r['No'] === 'number')),
-      error: reject,
-    });
-  });
+const SPREADSHEET_IDS = {
+  arboretum: '17ubjLK2F0K_UiCaFN5A7uqkZzFlkDYty',
+  das: '1ab_fzvZXTGG2Fxt3QiW3aoOmHQgvnAnu',
+  eduwisata: '1Y3Uzp76ekXiw39P7QcCSPdZB5isx0C5U',
+  'mangrove-pagkalan-jambi': '1rprGqN0CCYmxpHhf7krWS3n087QAwixQ',
+  poligowo: '1nVc9ZILH8q8H_0WS3RxIhBoJpiMfZQK0',
+  sukajadi: '1BAUCogyOJG_k7PNr8IxcZBTUVsJHJNY-',
+};
+
+const SPREADSHEET_SHEETS = {
+  'data-burung': 'Avifauna',
+  'data-fauna-Burung': 'Avifauna',
+  'data-flora': 'Flora',
+  'data-flora-keragamanHayati': 'Flora',
+  'data-mamalia': 'Mamalia',
+  'data-fauna-Mamalia': 'Mamalia',
+  'data-herpetofauna': 'Herpetofauna',
+  'data-fauna-Herpetofauna': 'Herpetofauna',
+  'data-kupukupu': 'Kupu-kupu',
+  'data-fauna-Kupukupu': 'Kupu-kupu',
+  'data-capung': 'Capung',
+  'data-fauna-Capung': 'Capung',
+};
+
+function getSpreadsheetCsvUrl(path) {
+  const match = /^data\/([^/]+)\/([^/]+)\.csv$/.exec(path);
+  if (!match) throw new Error(`Sumber sheet tidak valid: ${path}`);
+
+  const [, program, sourceName] = match;
+  const spreadsheetId = SPREADSHEET_IDS[program];
+  if (!spreadsheetId) throw new Error(`Spreadsheet belum dikonfigurasi: ${program}`);
+  const sheetName = SPREADSHEET_SHEETS[sourceName];
+  if (!sheetName) throw new Error(`Nama sheet belum dipetakan: ${sourceName}`);
+
+  const url = new URL(`https://docs.google.com/spreadsheets/d/${spreadsheetId}/gviz/tq`);
+  url.searchParams.set('tqx', 'out:csv');
+  url.searchParams.set('sheet', sheetName);
+  return url;
+}
+
+async function loadCSV(path) {
+  if (!csvLoadPromises.has(path)) {
+    const request = (async () => {
+      const response = await fetch(getSpreadsheetCsvUrl(path));
+      if (!response.ok) throw new Error(`Gagal mengambil sheet (${response.status}): ${path}`);
+
+      const csv = await response.text();
+      const { data, errors, meta } = Papa.parse(csv, {
+        header: true,
+        skipEmptyLines: true,
+        dynamicTyping: true,
+      });
+      if (errors.length) throw new Error(`Format CSV sheet tidak valid: ${errors[0].message}`);
+      if (!meta.fields?.includes('No')) throw new Error(`Kolom "No" tidak ditemukan pada sheet: ${path}`);
+
+      return data.filter(row => typeof row['No'] === 'number');
+    })();
+    csvLoadPromises.set(path, request);
+  }
+
+  return csvLoadPromises.get(path);
 }
 
 function getYearCols(rows) {
   if (!rows.length) return [];
   return Object.keys(rows[0]).filter(c => c.startsWith('Jumlah '));
+}
+
+function getIndexSourcePath(canvasId, tables) {
+  const match = /^chart(?:Kehati|Ekologi)(Flora|Burung|Mamalia|Herpetofauna|Capung|Kupukupu)$/.exec(canvasId);
+  if (!match) return null;
+
+  const table = tables.find(item => item.containerId === `table-${match[1].toLowerCase()}`);
+  return table?.csv ?? null;
+}
+
+function calculateDiversityIndices(rows) {
+  const indicesByYear = new Map();
+
+  getYearCols(rows).forEach(column => {
+    const abundances = rows
+      .map(row => Number(row[column]))
+      .filter(value => Number.isFinite(value) && value > 0);
+    const total = abundances.reduce((sum, value) => sum + value, 0);
+    const speciesCount = abundances.length;
+    if (total <= 0) return;
+
+    const shannon = -abundances.reduce((sum, value) => {
+      const proportion = value / total;
+      return sum + proportion * Math.log(proportion);
+    }, 0);
+
+    indicesByYear.set(column.replace('Jumlah ', ''), {
+      H: shannon,
+      R: total > 1 ? (speciesCount - 1) / Math.log(total) : null,
+      E: speciesCount > 1 ? shannon / Math.log(speciesCount) : null,
+    });
+  });
+
+  return indicesByYear;
+}
+
+function sortYears(years) {
+  return years.sort((left, right) => Number(left) - Number(right));
+}
+
+function mergeSingleIndexChart(cfg, indicesByYear) {
+  const valuesByYear = new Map((cfg.labels ?? []).map((year, index) => [String(year), cfg.values[index]]));
+  indicesByYear.forEach((indices, year) => {
+    if (Number.isFinite(indices.H)) valuesByYear.set(year, indices.H);
+  });
+
+  const labels = sortYears([...valuesByYear.keys()]);
+  return { labels, values: labels.map(year => valuesByYear.get(year)) };
+}
+
+function mergeGroupedIndexChart(cfg, indicesByYear) {
+  const existingSeries = new Map((cfg.series ?? []).map(series => [String(series.label), series]));
+  const valuesByYear = new Map();
+
+  existingSeries.forEach((series, year) => {
+    valuesByYear.set(year, Object.fromEntries(
+      cfg.groups.map((group, index) => [group, series.values[index]])
+    ));
+  });
+
+  indicesByYear.forEach((indices, year) => {
+    const yearValues = valuesByYear.get(year) ?? {};
+    cfg.groups.forEach(group => {
+      const normalizedGroup = group.replace('′', "'").toUpperCase();
+      const key = normalizedGroup.startsWith("H'") ? 'H' : normalizedGroup;
+      if (Number.isFinite(indices[key])) yearValues[group] = indices[key];
+    });
+    valuesByYear.set(year, yearValues);
+  });
+
+  const years = sortYears([...valuesByYear.keys()]);
+  const colorPalette = (cfg.series ?? []).map(series => series.color);
+  return {
+    groups: cfg.groups,
+    series: years.map((year, index) => ({
+      label: year,
+      color: existingSeries.get(year)?.color ?? colorPalette[index % colorPalette.length] ?? '#2a9d8f',
+      values: cfg.groups.map(group => valuesByYear.get(year)[group] ?? null),
+    })),
+  };
+}
+
+function showIndexFallbackWarning(card, cfg, error) {
+  console.error(`Gagal menghitung indeks dinamis untuk ${cfg.canvasId}:`, error);
+  if (!card) return;
+  const subtitle = card.querySelector('.chart-subtitle');
+  if (subtitle) {
+    const manualSubtitle = cfg.subtitle ?? subtitle.textContent;
+    subtitle.textContent = `${manualSubtitle} · Data indeks dinamis gagal dimuat; menampilkan nilai manual`;
+  }
 }
 
 const VALUE_LABEL_PLUGIN = {
@@ -60,7 +203,7 @@ const GROUPED_VALUE_LABEL_PLUGIN = {
   }
 };
 
-function mountGroupedBar(cfg) {
+async function mountGroupedBar(cfg, tables) {
   const canvas = document.getElementById(cfg.canvasId);
   if (!canvas) return;
 
@@ -72,13 +215,27 @@ function mountGroupedBar(cfg) {
     if (subEl)   subEl.textContent   = cfg.subtitle ?? '';
   }
 
-  const datasets = cfg.series.map(s => ({
+  let groups = cfg.groups;
+  let series = cfg.series;
+  const indexSourcePath = getIndexSourcePath(cfg.canvasId, tables);
+  if (indexSourcePath) {
+    try {
+      const rows = await loadCSV(indexSourcePath);
+      ({ groups, series } = mergeGroupedIndexChart(cfg, calculateDiversityIndices(rows)));
+    } catch (error) {
+      showIndexFallbackWarning(card, cfg, error);
+    }
+  }
+
+  if (chartInstances[cfg.canvasId]) chartInstances[cfg.canvasId].destroy();
+
+  const datasets = series.map(s => ({
     label: s.label, data: s.values, backgroundColor: s.color, borderRadius: 3, borderSkipped: false,
   }));
 
-  new Chart(canvas.getContext('2d'), {
+  chartInstances[cfg.canvasId] = new Chart(canvas.getContext('2d'), {
     type: 'bar',
-    data: { labels: cfg.groups, datasets },
+    data: { labels: groups, datasets },
     options: {
       responsive: true, maintainAspectRatio: false,
       layout: { padding: { top: cfg.showValueLabels ? 28 : 0 } },
@@ -102,8 +259,8 @@ function mountGroupedBar(cfg) {
   });
 }
 
-async function mountChart(cfg) {
-  if (cfg.type === 'groupedBar') return mountGroupedBar(cfg); 
+async function mountChart(cfg, tables) {
+  if (cfg.type === 'groupedBar') return mountGroupedBar(cfg, tables);
 
   const canvas = document.getElementById(cfg.canvasId);
   if (!canvas) return;
@@ -120,6 +277,16 @@ async function mountChart(cfg) {
 
   let labels = cfg.labels ?? [];
   let values = cfg.values ?? [];
+
+  const indexSourcePath = getIndexSourcePath(cfg.canvasId, tables);
+  if (indexSourcePath) {
+    try {
+      const rows = await loadCSV(indexSourcePath);
+      ({ labels, values } = mergeSingleIndexChart(cfg, calculateDiversityIndices(rows)));
+    } catch (error) {
+      showIndexFallbackWarning(card, cfg, error);
+    }
+  }
 
   if (cfg.csv) {
     try {
@@ -278,7 +445,7 @@ async function initChartsAndTables() {
     const chartData = await response.json();
 
     const results = await Promise.all([
-      ...chartData.CHARTS.map(mountChart),
+      ...chartData.CHARTS.map(cfg => mountChart(cfg, chartData.TABLES)),
       ...chartData.TABLES.map(mountTable)
     ]);
 

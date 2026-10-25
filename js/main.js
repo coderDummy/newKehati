@@ -82,13 +82,14 @@ async function loadPrograms() {
 async function loadOtherPrograms() {
   const slider = document.getElementById('otherProgramsSlider');
   if (!slider) return;
-  const currentPath = window.location.pathname.split('/').pop() || 'index.html';
+  const currentPath = window.location.pathname.split('/').filter(Boolean).pop() || 'index.html';
   try {
     const response = await fetch('listProgram.json');
     const programs = await response.json();
     slider.innerHTML = ''; 
     programs.forEach((p, i) => {
-      if (p.slug === currentPath || p.slug.includes(currentPath)) return;
+      const programPath = p.slug.replace(/\/+$/, '').split('/').pop();
+      if (programPath === currentPath) return;
       const card = document.createElement('a');
       card.href = p.slug;
       card.className = 'slider-card reveal';
